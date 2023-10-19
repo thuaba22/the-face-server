@@ -4,7 +4,7 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 // middleware
 
@@ -31,6 +31,19 @@ async function run() {
     await client.connect();
 
     const productCollection = client.db("productDB").collection("product");
+    app.get("/product", async (req, res) => {
+      const cursor = productCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/product/brand/:brandName", async (req, res) => {
+      const brandName = req.params.brandName;
+      console.log(brandName);
+      const cursor = productCollection.find({ brandName: brandName });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     app.post("/product", async (req, res) => {
       const newProduct = req.body;
